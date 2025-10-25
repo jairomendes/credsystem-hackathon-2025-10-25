@@ -1,22 +1,17 @@
 package main
 
 import (
-	"context"
 	"desviadores-de-deadlock/pkg/middleware"
-	"desviadores-de-deadlock/pkg/openrouter"
 	"desviadores-de-deadlock/pkg/service/health"
+	"desviadores-de-deadlock/pkg/service/intent"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	port := "18020"
 
 	server := createServer(port)
 
@@ -29,10 +24,8 @@ func main() {
 
 func createServer(port string) *http.Server {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", middleware.LoggingMiddleware(health.HealthHandler))
-
-	openrouterClient := openrouter.NewClient(os.Getenv("OPENROUTER_API_KEY"))
-	openrouterClient.ChatCompletion(context.Background(), "Hello, how are you?")
+	mux.HandleFunc("/api/healthz", middleware.LoggingMiddleware(health.HealthHandler))
+	mux.HandleFunc("/api/intent", middleware.LoggingMiddleware(intent.IntentHandler))
 
 	return &http.Server{
 		Addr:         ":" + port,
@@ -45,5 +38,6 @@ func createServer(port string) *http.Server {
 
 func printStartupMessages(port string) {
 	fmt.Printf("Server starting on port %s\n", port)
-	fmt.Printf("Health check available at http://localhost:%s/\n", port)
+	fmt.Printf("Health check available at http://localhost:%s/healthz\n", port)
+	fmt.Printf("Intent endpoint available at http://localhost:%s/intent\n", port)
 }

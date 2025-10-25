@@ -7,7 +7,7 @@ services:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - PORT=${PORT}
     ports:
-      - "${PORT:-8080}:${PORT:-8080}"
+      - "18020:18020"
     deploy:
       resources:
         limits:
