@@ -2,6 +2,7 @@ FROM golang:1.25-bookworm AS build
 
 RUN apt-get update && apt-get -y install \
     git \
+    make \
     ca-certificates
 
 WORKDIR /src
