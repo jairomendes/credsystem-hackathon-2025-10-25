@@ -4,7 +4,7 @@ startContainer() {
     pushd ../participantes/$1 > /dev/null
         services=$(docker compose config --services | wc -l)
         echo "" > docker-compose.logs
-        nohup docker compose up --build >> docker-compose.logs &
+        docker compose up --build --wait -d >> docker-compose.logs
     popd > /dev/null
 }
 
@@ -39,10 +39,10 @@ for directory in ../participantes/*; do
     startContainer $participant
 
     success=1
-    max_attempts=3
+    max_attempts=5
     attempt=1
     while [ $success -ne 0 ] && [ $max_attempts -ge $attempt ]; do
-        curl -f -s --max-time 3 localhost:18020/api/healthz
+        curl -f -s --max-time 5 localhost:18020/api/healthz
         success=$?
         echo "tried $attempt out of $max_attempts..."
         sleep 10
